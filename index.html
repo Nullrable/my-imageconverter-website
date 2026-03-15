@@ -1643,8 +1643,40 @@
             }
         };
 
-        // Get saved language or default to English
-        const savedLang = localStorage.getItem('lang') || 'en';
+        // Get saved language or detect from browser
+        function getDefaultLanguage() {
+            const saved = localStorage.getItem('lang');
+            if (saved && translations[saved]) {
+                return saved;
+            }
+
+            // Detect browser language
+            const browserLang = navigator.language || navigator.userLanguage;
+            const lang = browserLang.toLowerCase();
+
+            // Match browser language to supported translations
+            if (lang.startsWith('zh')) {
+                // Check for Traditional Chinese
+                if (lang.includes('tw') || lang.includes('hk') || lang.includes('hant')) {
+                    return 'zh-TW';
+                }
+                return 'zh';
+            }
+            if (lang.startsWith('ja')) return 'ja';
+            if (lang.startsWith('ko')) return 'ko';
+            if (lang.startsWith('vi')) return 'vi';
+            if (lang.startsWith('id')) return 'id';
+            if (lang.startsWith('ar')) return 'ar';
+            if (lang.startsWith('fr')) return 'fr';
+            if (lang.startsWith('de')) return 'de';
+            if (lang.startsWith('es')) return 'es';
+            if (lang.startsWith('pt')) return 'pt';
+            if (lang.startsWith('it')) return 'it';
+
+            return 'en';
+        }
+
+        const savedLang = getDefaultLanguage();
 
         // Apply translations
         function applyTranslations(lang) {
