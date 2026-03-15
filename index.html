@@ -1,0 +1,1731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Image Converter - All-in-one image processing tool. Convert, compress, crop, resize, and more.">
+    <title>Image Converter - All-in-One Image Processing Tool</title>
+
+    <!-- 配置参数 -->
+    <script>
+        // App 配置
+        window.APP_CONFIG = {
+            // App Store 下载地址
+            appStoreUrl: 'https://apps.apple.com',
+            // 隐私协议地址
+            privacyPolicyUrl: 'https://docs.google.com/document/d/1R4ZKff-zySRzuw4l56_n2h489QxF_Vhd55WFM3svVEY/edit',
+            // 联系邮箱
+            contactEmail: 'nhsoft.lsd@gmail.com',
+            // App 名称
+            appName: 'Image Converter'
+        };
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #000000;
+            --primary-dark: #000000;
+            --secondary: #3B82F6;
+            --accent: #8B5CF6;
+            --text-dark: #1F2937;
+            --text-light: #6B7280;
+            --text-muted: #9CA3AF;
+            --bg-light: #F9FAFB;
+            --white: #FFFFFF;
+            --glass: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 15px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.12);
+            --shadow-glow: 0 0 40px rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: var(--bg-light);
+            overflow-x: hidden;
+        }
+
+        html[dir="rtl"] {
+            direction: rtl;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
+        }
+
+        header.scrolled {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: var(--shadow-md);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+        }
+
+        .logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-light);
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-cta {
+            background: var(--primary) !important;
+            color: white !important;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: all 0.2s !important;
+        }
+
+        .nav-cta:hover {
+            background: var(--primary-dark) !important;
+            transform: translateY(-1px);
+        }
+
+        .language-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: var(--bg-light);
+            border-radius: 8px;
+            cursor: pointer;
+            border: 1px solid var(--glass-border);
+        }
+
+        .language-selector select {
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-dark);
+            cursor: pointer;
+            outline: none;
+        }
+
+        /* Hero */
+        .hero {
+            padding: 160px 0 100px;
+            background: linear-gradient(180deg, var(--white) 0%, var(--bg-light) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(0,0,0,0.03) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .hero-content {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 64px;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            color: var(--text-dark);
+        }
+
+        .hero h1 span {
+            color: var(--primary);
+            position: relative;
+        }
+
+        .hero p {
+            font-size: 20px;
+            color: var(--text-light);
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-bottom: 48px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--text-dark);
+            border: 1px solid var(--glass-border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-light);
+            transform: translateY(-2px);
+        }
+
+        .hero-badges {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: white;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-light);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .badge-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .badge-icon.check {
+            background: #10B981;
+        }
+
+        .badge-icon.star {
+            background: #F59E0B;
+        }
+
+        .badge-icon svg {
+            width: 12px;
+            height: 12px;
+            fill: white;
+        }
+
+        /* Features */
+        .features {
+            padding: 100px 0;
+            background: var(--white);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-header h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-dark);
+        }
+
+        .section-header p {
+            font-size: 18px;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+
+        .feature-card {
+            background: var(--bg-light);
+            padding: 32px 24px;
+            border-radius: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary);
+        }
+
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--primary);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .feature-icon svg {
+            width: 32px;
+            height: 32px;
+            fill: white;
+        }
+
+        .feature-card h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-dark);
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.5;
+        }
+
+        /* Screenshots */
+        .screenshots {
+            padding: 100px 0;
+            background: var(--bg-light);
+        }
+
+        .screenshots-grid {
+            display: flex;
+            gap: 24px;
+            overflow-x: auto;
+            padding-bottom: 16px;
+            -webkit-overflow-scrolling: touch;
+            scroll-snap-type: x mandatory;
+        }
+
+        .screenshots-grid .screenshot-item {
+            flex: 0 0 auto;
+            width: 280px;
+            scroll-snap-align: center;
+        }
+
+        .screenshots-grid .screenshot-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 16px;
+        }
+
+        .screenshot-item {
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            transition: transform 0.3s ease;
+        }
+
+        .screenshot-item:hover {
+            transform: scale(1.02);
+        }
+
+        .screenshot-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            padding: 100px 0;
+            background: var(--white);
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .step {
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 80px;
+            height: 80px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .step h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-dark);
+        }
+
+        .step p {
+            font-size: 16px;
+            color: var(--text-light);
+        }
+
+        .step-connector {
+            position: absolute;
+            top: 40px;
+            right: -40px;
+            width: 80px;
+            height: 2px;
+            background: var(--glass-border);
+        }
+
+        /* Download */
+        .download {
+            padding: 120px 0;
+            background: var(--primary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .download::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            left: -100px;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .download::after {
+            content: '';
+            position: absolute;
+            bottom: -100px;
+            right: -100px;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .download-content {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .download h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 48px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 16px;
+        }
+
+        .download p {
+            font-size: 18px;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 40px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .app-store-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: white;
+            color: var(--text-dark);
+            padding: 16px 32px;
+            border-radius: 12px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .app-store-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+        }
+
+        .app-store-btn svg {
+            width: 28px;
+            height: 28px;
+            fill: var(--text-dark);
+        }
+
+        .app-store-btn-text {
+            text-align: left;
+        }
+
+        .app-store-btn small {
+            display: block;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .app-store-btn span {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        footer {
+            padding: 60px 0 40px;
+            background: var(--text-dark);
+            color: white;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 60px;
+            margin-bottom: 40px;
+        }
+
+        .footer-brand p {
+            color: rgba(255,255,255,0.7);
+            margin-top: 16px;
+            font-size: 14px;
+        }
+
+        .footer-links h4 {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            padding-top: 40px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+            font-size: 14px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .screenshots-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 40px;
+            }
+
+            .hero p {
+                font-size: 16px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .screenshots-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .steps {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .step-connector {
+                display: none;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .section-header h2 {
+                font-size: 32px;
+            }
+
+            .download h2 {
+                font-size: 32px;
+            }
+        }
+
+        /* Mobile menu */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .mobile-menu-btn span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: var(--text-dark);
+            margin: 6px 0;
+            transition: all 0.3s;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header id="header">
+        <div class="container">
+            <nav>
+                <a href="#" class="logo">
+                    <div class="logo-icon">
+                        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-7-2h2v-4h4v-2h-4V7h-2v4H8v2h4z"/></svg>
+                    </div>
+                    <span data-i18n="app_name">Image Converter</span>
+                </a>
+                <ul class="nav-links">
+                    <li><a href="#features" data-i18n="nav_features">Features</a></li>
+                    <li><a href="#screenshots" data-i18n="nav_screenshots">Screenshots</a></li>
+                    <li><a href="#how-it-works" data-i18n="nav_how_it_works">How It Works</a></li>
+                    <li><a href="#download" class="nav-cta" data-i18n="nav_download">Download</a></li>
+                    <li>
+                        <div class="language-selector">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"/></svg>
+                            <select id="lang-select" onchange="changeLanguage(this.value)">
+                                <option value="zh">简体中文</option>
+                                <option value="zh-TW">繁體中文</option>
+                                <option value="en">English</option>
+                                <option value="ja">日本語</option>
+                                <option value="ko">한국어</option>
+                                <option value="vi">Tiếng Việt</option>
+                                <option value="id">Indonesia</option>
+                                <option value="ar">العربية</option>
+                                <option value="fr">Français</option>
+                                <option value="de">Deutsch</option>
+                                <option value="es">Español</option>
+                                <option value="pt">Português</option>
+                                <option value="it">Italiano</option>
+                            </select>
+                        </div>
+                    </li>
+                </ul>
+                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 data-i18n="hero_title">Free Image Conversion.<br><span data-i18n="hero_subtitle">Powerful Tools.</span></h1>
+                <p data-i18n="hero_desc">All-in-one image processing tool. Convert formats, compress, crop, resize, merge, and more. Transform your images with ease.</p>
+                <div class="hero-buttons">
+                    <a href="#download" class="btn btn-primary">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14zm-4.2-5.78v1.75l3.2-2.99-3.2-2.99v1.7c-3.11.43-4.35 2.56-4.8 4.7 1.11-1.5 2.58-2.18 4.8-2.18z"/></svg>
+                        <span data-i18n="btn_download_ios">Download for iOS</span>
+                    </a>
+                    <a href="#features" class="btn btn-secondary" data-i18n="btn_learn_more">Learn More</a>
+                </div>
+                <div class="hero-badges">
+                    <div class="badge">
+                        <div class="badge-icon check">
+                            <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                        </div>
+                        <span data-i18n="badge_all_features">All Features</span>
+                    </div>
+                    <div class="badge">
+                        <div class="badge-icon star">
+                            <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        </div>
+                        <span data-i18n="badge_no_ads">No Ads</span>
+                    </div>
+                    <div class="badge">
+                        <div class="badge-icon check">
+                            <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                        </div>
+                        <span data-i18n="badge_private">100% Private</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-header">
+                <h2 data-i18n="features_title">Powerful Image Tools</h2>
+                <p data-i18n="features_subtitle">Everything you need to process and transform your images efficiently.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24"><path d="M7.47 21.49C4.2 19.93 1.86 16.76 1.5 13H0c.51 6.16 5.66 11 11.95 11 .23 0 .44-.02.66-.03L8.8 20.15l-1.33 1.34zM12.05 0c-.23 0-.44.02-.66.04l3.81 3.81 1.33-1.33C19.8 4.07 22.14 7.24 22.5 11H24c-.51-6.16-5.66-11-11.95-11zM16 14h2V8c0-1.11-.9-2-2-2h-6v2h6v6zm-8 2V8H6v8c0 1.1.89 2 2 2h6v-2H8z"/></svg>
+                    </div>
+                    <h3 data-i18n="feature_1_title">Rotate</h3>
+                    <p data-i18n="feature_1_desc">Rotate images by 90, 180, or 270 degrees. Flip horizontally or vertically with ease.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24"><path d="M19 12h-2v3h-3v2h5v-5zM7 9h3V7H5v5h2V9zm14-6H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16.01H3V4.99h18v14.02z"/></svg>
+                    </div>
+                    <h3 data-i18n="feature_2_title">Resize</h3>
+                    <p data-i18n="feature_2_desc">Change image dimensions while maintaining aspect ratio. Preset sizes or custom dimensions.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24"><path d="M17 15h2V7c0-1.1-.9-2-2-2H9v2h8v8zM7 17V1H5v4H1v2h4v10c0 1.1.9 2 2 2h10v4h2v-4h4v-2H7z"/></svg>
+                    </div>
+                    <h3 data-i18n="feature_3_title">Crop</h3>
+                    <p data-i18n="feature_3_desc">Crop images to perfect dimensions. Free-form or preset aspect ratios available.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24"><path d="M22 16V4c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2zm-11-4l2.03 2.71L16 11l4 5H8l3-4zM2 6v14c0 1.1.9 2 2 2h14v-2H4V6H2z"/></svg>
+                    </div>
+                    <h3 data-i18n="feature_4_title">Stitch</h3>
+                    <p data-i18n="feature_4_desc">Combine multiple images into one. Vertical, horizontal, or grid layouts.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                    </div>
+                    <h3 data-i18n="feature_5_title">Format Convert</h3>
+                    <p data-i18n="feature_5_desc">Convert between image formats: JPEG, PNG, HEIC, WebP, and more.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3zm5 15h-2v-6H9v6H7v-7.81l5-4.5 5 4.5V18z"/></svg>
+                    </div>
+                    <h3 data-i18n="feature_6_title">Compress</h3>
+                    <p data-i18n="feature_6_desc">Reduce file size while maintaining quality. Batch compression supported.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24"><path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM9 9.5h1v-1H9v1zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm10 5.5h1v-3h-1v3z"/></svg>
+                    </div>
+                    <h3 data-i18n="feature_7_title">PDF to Image</h3>
+                    <p data-i18n="feature_7_desc">Convert PDF pages to high-quality images. Export all pages or selected ones.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5-7l-3 3.72L9 13l-3 4h12l-4-5z"/></svg>
+                    </div>
+                    <h3 data-i18n="feature_8_title">Image to PDF</h3>
+                    <p data-i18n="feature_8_desc">Combine images into a PDF document. Custom page sizes and layouts.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="screenshots" id="screenshots">
+        <div class="container">
+            <div class="section-header">
+                <h2 data-i18n="screenshots_title">See Image Converter in Action</h2>
+                <p data-i18n="screenshots_subtitle">Beautiful, intuitive interface that makes image processing a breeze.</p>
+            </div>
+            <div class="screenshots-grid">
+                <div class="screenshot-item">
+                    <img src="images/ios_1.png" alt="Screenshot 1" onerror="this.style.display='none'">
+                </div>
+                <div class="screenshot-item">
+                    <img src="images/ios_2.png" alt="Screenshot 2" onerror="this.style.display='none'">
+                </div>
+                <div class="screenshot-item">
+                    <img src="images/ios_3.png" alt="Screenshot 3" onerror="this.style.display='none'">
+                </div>
+                <div class="screenshot-item">
+                    <img src="images/ios_4.png" alt="Screenshot 4" onerror="this.style.display='none'">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <h2 data-i18n="how_title">How It Works</h2>
+                <p data-i18n="how_subtitle">Three simple steps to transform your images.</p>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3 data-i18n="step_1_title">Select Image</h3>
+                    <p data-i18n="step_1_desc">Choose a photo from your library or take a new one with your camera.</p>
+                    <div class="step-connector"></div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3 data-i18n="step_2_title">Choose Tool</h3>
+                    <p data-i18n="step_2_desc">Select from rotate, resize, crop, compress, convert, or other tools.</p>
+                    <div class="step-connector"></div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3 data-i18n="step_3_title">Save & Share</h3>
+                    <p data-i18n="step_3_desc">Save to your library or share directly to your favorite apps.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="download" id="download">
+        <div class="container">
+            <div class="download-content">
+                <h2 data-i18n="download_title">Ready to Transform Your Images?</h2>
+                <p data-i18n="download_desc">Download Image Converter now and start processing your images with powerful tools. Free to try, powerful enough to keep.</p>
+                <a href="#" class="app-store-btn" id="app-store-link">
+                    <svg viewBox="0 0 24 24"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+                    <div class="app-store-btn-text">
+                        <small data-i18n="app_store_small">Download on the</small>
+                        <span data-i18n="app_store">App Store</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <a href="#" class="logo" style="color: white;">
+                        <div class="logo-icon">
+                            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-7-2h2v-4h4v-2h-4V7h-2v4H8v2h4z"/></svg>
+                        </div>
+                        <span>Image Converter</span>
+                    </a>
+                    <p data-i18n="footer_desc">All-in-one image processing tool. Transform, convert, compress, and enhance your images with ease.</p>
+                </div>
+                <div class="footer-links">
+                    <h4 data-i18n="footer_product">Product</h4>
+                    <ul>
+                        <li><a href="#features" data-i18n="nav_features">Features</a></li>
+                        <li><a href="#screenshots" data-i18n="nav_screenshots">Screenshots</a></li>
+                        <li><a href="#download" data-i18n="nav_download">Download</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4 data-i18n="footer_support">Support</h4>
+                    <ul>
+                        <li><a href="#" target="_blank" rel="noopener" id="privacy-link" data-i18n="footer_privacy">Privacy Policy</a></li>
+                        <li><a href="#" id="contact-link" data-i18n="footer_contact">Contact Us</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Image Converter. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Translation data
+        const translations = {
+            en: {
+                app_name: "Image Converter",
+                nav_features: "Features",
+                nav_screenshots: "Screenshots",
+                nav_how_it_works: "How It Works",
+                nav_download: "Download",
+                hero_title: "Free Image Conversion.<br>",
+                hero_subtitle: "Powerful Tools.",
+                hero_desc: "All-in-one image processing tool. Convert formats, compress, crop, resize, merge, and more. Transform your images with ease.",
+                btn_download_ios: "Download for iOS",
+                btn_learn_more: "Learn More",
+                badge_all_features: "All Features",
+                badge_no_ads: "No Ads",
+                badge_private: "100% Private",
+                features_title: "Powerful Image Tools",
+                features_subtitle: "Everything you need to process and transform your images efficiently.",
+                feature_1_title: "Rotate",
+                feature_1_desc: "Rotate images by 90, 180, or 270 degrees. Flip horizontally or vertically with ease.",
+                feature_2_title: "Resize",
+                feature_2_desc: "Change image dimensions while maintaining aspect ratio. Preset sizes or custom dimensions.",
+                feature_3_title: "Crop",
+                feature_3_desc: "Crop images to perfect dimensions. Free-form or preset aspect ratios available.",
+                feature_4_title: "Stitch",
+                feature_4_desc: "Combine multiple images into one. Vertical, horizontal, or grid layouts.",
+                feature_5_title: "Format Convert",
+                feature_5_desc: "Convert between image formats: JPEG, PNG, HEIC, WebP, and more.",
+                feature_6_title: "Compress",
+                feature_6_desc: "Reduce file size while maintaining quality. Batch compression supported.",
+                feature_7_title: "PDF to Image",
+                feature_7_desc: "Convert PDF pages to high-quality images. Export all pages or selected ones.",
+                feature_8_title: "Image to PDF",
+                feature_8_desc: "Combine images into a PDF document. Custom page sizes and layouts.",
+                screenshots_title: "See Image Converter in Action",
+                screenshots_subtitle: "Beautiful, intuitive interface that makes image processing a breeze.",
+                how_title: "How It Works",
+                how_subtitle: "Three simple steps to transform your images.",
+                step_1_title: "Select Image",
+                step_1_desc: "Choose a photo from your library or take a new one with your camera.",
+                step_2_title: "Choose Tool",
+                step_2_desc: "Select from rotate, resize, crop, compress, convert, or other tools.",
+                step_3_title: "Save & Share",
+                step_3_desc: "Save to your library or share directly to your favorite apps.",
+                download_title: "Ready to Transform Your Images?",
+                download_desc: "Download Image Converter now and start processing your images with powerful tools. Free to try, powerful enough to keep.",
+                app_store_small: "Download on the",
+                app_store: "App Store",
+                footer_desc: "All-in-one image processing tool. Transform, convert, compress, and enhance your images with ease.",
+                footer_product: "Product",
+                footer_support: "Support",
+                footer_privacy: "Privacy Policy",
+                footer_contact: "Contact Us"
+            },
+            zh: {
+                app_name: "图片转换器",
+                nav_features: "功能",
+                nav_screenshots: "截图",
+                nav_how_it_works: "使用教程",
+                nav_download: "下载",
+                hero_title: "免费图片转换。<br>",
+                hero_subtitle: "强大工具。",
+                hero_desc: "一体化图片处理工具。格式转换、压缩、裁剪、调整尺寸、拼接等功能。轻松转换您的图片。",
+                btn_download_ios: "下载 iOS 版",
+                btn_learn_more: "了解更多",
+                badge_all_features: "全部功能",
+                badge_no_ads: "无广告",
+                badge_private: "100% 隐私",
+                features_title: "强大的图片工具",
+                features_subtitle: "高效处理和转换图片所需的一切。",
+                feature_1_title: "旋转",
+                feature_1_desc: "将图片旋转 90、180 或 270 度。轻松水平或垂直翻转。",
+                feature_2_title: "调整尺寸",
+                feature_2_desc: "在保持宽高比的同时更改图片尺寸。预设尺寸或自定义尺寸。",
+                feature_3_title: "裁剪",
+                feature_3_desc: "将图片裁剪为完美尺寸。自由形式或预设宽高比。",
+                feature_4_title: "拼接",
+                feature_4_desc: "将多张图片合并为一张。垂直、水平或网格布局。",
+                feature_5_title: "格式转换",
+                feature_5_desc: "在图片格式之间转换：JPEG、PNG、HEIC、WebP 等。",
+                feature_6_title: "压缩",
+                feature_6_desc: "在保持质量的同时减小文件大小。支持批量压缩。",
+                feature_7_title: "PDF 转图片",
+                feature_7_desc: "将 PDF 页面转换为高质量图片。导出全部或选定的页面。",
+                feature_8_title: "图片转 PDF",
+                feature_8_desc: "将图片合并为 PDF 文档。自定义页面尺寸和布局。",
+                screenshots_title: "查看图片转换器实际效果",
+                screenshots_subtitle: "美观、直观的界面，让图片处理变得轻而易举。",
+                how_title: "使用方法",
+                how_subtitle: "转换图片的三个简单步骤。",
+                step_1_title: "选择图片",
+                step_1_desc: "从相册中选择照片或使用相机拍摄新照片。",
+                step_2_title: "选择工具",
+                step_2_desc: "选择旋转、调整尺寸、裁剪、压缩、转换或其他工具。",
+                step_3_title: "保存和分享",
+                step_3_desc: "保存到相册或直接分享到您喜欢的应用。",
+                download_title: "准备好转换您的图片了吗？",
+                download_desc: "立即下载图片转换器，开始使用强大工具处理您的图片。",
+                app_store_small: "下载",
+                app_store: "App Store",
+                footer_desc: "一体化图片处理工具。轻松转换、压缩和增强您的图片。",
+                footer_product: "产品",
+                footer_support: "支持",
+                footer_privacy: "隐私政策",
+                footer_contact: "联系我们"
+            },
+            "zh-TW": {
+                app_name: "圖片轉換器",
+                nav_features: "功能",
+                nav_screenshots: "截圖",
+                nav_how_it_works: "使用教程",
+                nav_download: "下載",
+                hero_title: "免費圖片轉換。<br>",
+                hero_subtitle: "強大工具。",
+                hero_desc: "一體化圖片處理工具。格式轉換、壓縮、裁剪、調整尺寸、拼接等功能。輕鬆轉換您的圖片。",
+                btn_download_ios: "下載 iOS 版",
+                btn_learn_more: "了解更多",
+                badge_all_features: "全部功能",
+                badge_no_ads: "無廣告",
+                badge_private: "100% 隱私",
+                features_title: "強大的圖片工具",
+                features_subtitle: "高效處理和轉換圖片所需的一切。",
+                feature_1_title: "旋轉",
+                feature_1_desc: "將圖片旋轉 90、180 或 270 度。輕鬆水平或垂直翻轉。",
+                feature_2_title: "調整尺寸",
+                feature_2_desc: "在保持寬高比的同時更改圖片尺寸。預設尺寸或自訂尺寸。",
+                feature_3_title: "裁剪",
+                feature_3_desc: "將圖片裁剪為完美尺寸。自由形式或預設寬高比。",
+                feature_4_title: "拼接",
+                feature_4_desc: "將多張圖片合併為一張。垂直、水平或網格佈局。",
+                feature_5_title: "格式轉換",
+                feature_5_desc: "在圖片格式之間轉換：JPEG、PNG、HEIC、WebP 等。",
+                feature_6_title: "壓縮",
+                feature_6_desc: "在保持質量的同時減小檔案大小。支援批次壓縮。",
+                feature_7_title: "PDF 轉圖片",
+                feature_7_desc: "將 PDF 頁面轉換為高品質圖片。匯出全部或選定的頁面。",
+                feature_8_title: "圖片轉 PDF",
+                feature_8_desc: "將圖片合併為 PDF 文檔。自訂頁面尺寸和佈局。",
+                screenshots_title: "查看圖片轉換器實際效果",
+                screenshots_subtitle: "美觀、直觀的界面，讓圖片處理變得輕而易舉。",
+                how_title: "使用方法",
+                how_subtitle: "轉換圖片的三個簡單步驟。",
+                step_1_title: "選擇圖片",
+                step_1_desc: "從相簿中選擇照片或使用相機拍攝新照片。",
+                step_2_title: "選擇工具",
+                step_2_desc: "選擇旋轉、調整尺寸、裁剪、壓縮、轉換或其他工具。",
+                step_3_title: "儲存和分享",
+                step_3_desc: "儲存到相簿或直接分享到您喜歡的應用。",
+                download_title: "准备好轉換您的圖片了嗎？",
+                download_desc: "立即下載圖片轉換器，開始使用強大工具處理您的圖片。",
+                app_store_small: "下載",
+                app_store: "App Store",
+                footer_desc: "一體化圖片處理工具。輕鬆轉換、壓縮和增強您的圖片。",
+                footer_product: "產品",
+                footer_support: "支援",
+                footer_privacy: "隱私政策",
+                footer_contact: "聯繫我們"
+            },
+            ja: {
+                app_name: "画像変換",
+                nav_features: "機能",
+                nav_screenshots: "スクリーンショット",
+                nav_how_it_works: "使い方",
+                nav_download: "ダウンロード",
+                hero_title: "無料の画像変換。<br>",
+                hero_subtitle: "強力なツール。",
+                hero_desc: "オールインワンの画像処理ツール。形式変換、圧縮、切り抜き、リサイズ、結合など。画像を簡単に変換。",
+                btn_download_ios: "iOS用にダウンロード",
+                btn_learn_more: "詳細",
+                badge_all_features: "全機能",
+                badge_no_ads: "広告なし",
+                badge_private: "100%プライバシー",
+                features_title: "強力な画像ツール",
+                features_subtitle: "画像を効率的に処理・変換するために必要なすべて。",
+                feature_1_title: "回転",
+                feature_1_desc: "画像を90度、180度、270度で回転。水平・垂直反転も可能。",
+                feature_2_title: "リサイズ",
+                feature_2_desc: "アスペクト比を維持しながら画像サイズを変更。プリセットまたはカスタムサイズ。",
+                feature_3_title: "切り抜き",
+                feature_3_desc: "画像を完璧なサイズに切り抜き的自由またはプリセットのアスペクト比。",
+                feature_4_title: "拼接",
+                feature_4_desc: "複数の画像を1つに結合。縦型、横型、グリッドレイアウト。",
+                feature_5_title: "形式変換",
+                feature_5_desc: "画像形式間の変換：JPEG、PNG、HEIC、WebPなど。",
+                feature_6_title: "圧縮",
+                feature_6_desc: "品質を維持しながらファイルサイズを削減。バッチ圧縮に対応。",
+                feature_7_title: "PDFから画像",
+                feature_7_desc: "PDFページを高品質の画像に変換。全ページまたは選択したページをエクスポート。",
+                feature_8_title: "画像からPDF",
+                feature_8_desc: "画像をPDFドキュメントに結合。カスタムページサイズとレイアウト。",
+                screenshots_title: "画像変換を体験",
+                screenshots_subtitle: "美しい直感的なインターフェースで画像処理が簡単に。",
+                how_title: "使い方",
+                how_subtitle: "画像を変換する3つの簡単なステップ。",
+                step_1_title: "画像を選択",
+                step_1_desc: "ライブラリから写真を選択するか、新しい写真を撮る。",
+                step_2_title: "ツールを選択",
+                step_2_desc: "回転、リサイズ、切り抜き、圧縮、変換などから選択。",
+                step_3_title: "保存・共有",
+                step_3_desc: "ライブラリに保存するか、お気に入りのアプリに直接共有。",
+                download_title: "画像変換を始めましょう？",
+                download_desc: "今すぐ画像変換をダウンロードして、強力なツールで画像を処理しましょう。",
+                app_store_small: "ダウンロード",
+                app_store: "App Store",
+                footer_desc: "オールインワンの画像処理ツール。",
+                footer_product: "製品",
+                footer_support: "サポート",
+                footer_privacy: "プライバシーポリシー",
+                footer_contact: "お問い合わせ"
+            },
+            ko: {
+                app_name: "이미지 변환기",
+                nav_features: "기능",
+                nav_screenshots: "스크린샷",
+                nav_how_it_works: "사용 방법",
+                nav_download: "다운로드",
+                hero_title: "무료 이미지 변환.<br>",
+                hero_subtitle: "강력한 도구.",
+                hero_desc: "올인원 이미지 처리 도구. 형식 변환, 압축, 자르기, 크기 조정, 병합 등. 이미지를 쉽게 변환하세요.",
+                btn_download_ios: "iOS용 다운로드",
+                btn_learn_more: "자세히 보기",
+                badge_all_features: "모든 기능",
+                badge_no_ads: "광고 없음",
+                badge_private: "100% 프라이버시",
+                features_title: "강력한 이미지 도구",
+                features_subtitle: "이미지를 효율적으로 처리하고 변환하는 데 필요한 모든 것.",
+                feature_1_title: "회전",
+                feature_1_desc: "이미지를 90도, 180도, 270도로 회전. 수평 또는 수직 뒤집기.",
+                feature_2_title: "크기 조정",
+                feature_2_desc: "종횡비를 유지하면서 이미지 크기 변경. 프리셋 또는 사용자 지정 크기.",
+                feature_3_title: "자르기",
+                feature_3_desc: "완벽한 크기로 이미지 자르기. 자유형 또는 프리셋 종횡비.",
+                feature_4_title: "병합",
+                feature_4_desc: "여러 이미지를 하나로 결합. 세로, 가로 또는 그리드 레이아웃.",
+                feature_5_title: "형식 변환",
+                feature_5_desc: "이미지 형식 간 변환: JPEG, PNG, HEIC, WebP 등.",
+                feature_6_title: "압축",
+                feature_6_desc: "품질을 유지하면서 파일 크기 감소. 일괄 압축 지원.",
+                feature_7_title: "PDF에서 이미지",
+                feature_7_desc: "PDF 페이지를 고품질 이미지로 변환. 전체 페이지 또는 선택한 페이지 내보내기.",
+                feature_8_title: "이미지에서 PDF",
+                feature_8_desc: "이미지를 PDF 문서로 결합. 사용자 지정 페이지 크기 및 레이아웃.",
+                screenshots_title: "이미지 변환기 실전",
+                screenshots_subtitle: "이미지 처리를 쉽게 만드는 아름답고 직관적인 인터페이스.",
+                how_title: "작동 원리",
+                how_subtitle: "이미지를 변환하는 3가지 간단한 단계.",
+                step_1_title: "이미지 선택",
+                step_1_desc: "라이브러리에서 사진을 선택하거나 새 사진을 찍으세요.",
+                step_2_title: "도구 선택",
+                step_2_desc: "회전, 크기 조정, 자르기, 압축, 변환中选择.",
+                step_3_title: "저장 및 공유",
+                step_3_desc: "라이브러리에 저장하거나 좋아하는 앱에 직접 공유하세요.",
+                download_title: "이미지 변환을 시작할 준비가 되셨나요?",
+                download_desc: "지금 이미지 변환기를 다운로드하고 강력한 도구로 이미지 처리를 시작하세요.",
+                app_store_small: "다운로드",
+                app_store: "App Store",
+                footer_desc: "올인원 이미지 처리 도구.",
+                footer_product: "제품",
+                footer_support: "지원",
+                footer_privacy: "개인정보 처리방침",
+                footer_contact: "문의하기"
+            },
+            vi: {
+                app_name: "Chuyển đổi hình ảnh",
+                nav_features: "Tính năng",
+                nav_screenshots: "Ảnh chụp màn hình",
+                nav_how_it_works: "Cách hoạt động",
+                nav_download: "Tải về",
+                hero_title: "Chuyển đổi hình ảnh miễn phí.<br>",
+                hero_subtitle: "Công cụ mạnh mẽ.",
+                hero_desc: "Công xử lý hình ảnh tất cả trong một. Chuyển đổi định dạng, nén, cắt, thay đổi kích thước, ghép và hơn thế nữa.",
+                btn_download_ios: "Tải cho iOS",
+                btn_learn_more: "Tìm hiểu thêm",
+                badge_all_features: "Tất cả tính năng",
+                badge_no_ads: "Không quảng cáo",
+                badge_private: "100% Riêng tư",
+                features_title: "Công cụ hình ảnh mạnh mẽ",
+                features_subtitle: "Mọi thứ bạn cần để xử lý và chuyển đổi hình ảnh hiệu quả.",
+                feature_1_title: "Xoay",
+                feature_1_desc: "Xoay hình ảnh 90, 180 hoặc 270 độ. Lật ngang hoặc dọc dễ dàng.",
+                feature_2_title: "Thay đổi kích thước",
+                feature_2_desc: "Thay đổi kích thước hình ảnh giữ nguyên tỷ lệ. Kích thước预设 hoặc tùy chỉnh.",
+                feature_3_title: "Cắt",
+                feature_3_desc: "Cắt hình ảnh theo kích thước hoàn hảo. Tự do hoặc预设 tỷ lệ.",
+                feature_4_title: "Ghép",
+                feature_4_desc: "Kết hợp nhiều hình ảnh thành một. Bố cục dọc, ngang hoặc lưới.",
+                feature_5_title: "Chuyển đổi định dạng",
+                feature_5_desc: "Chuyển đổi giữa các định dạng: JPEG, PNG, HEIC, WebP và hơn thế.",
+                feature_6_title: "Nén",
+                feature_6_desc: "Giảm kích thước file mà vẫn giữ chất lượng. Hỗ trợ nén hàng loạt.",
+                feature_7_title: "PDF sang hình ảnh",
+                feature_7_desc: "Chuyển đổi trang PDF thành hình ảnh chất lượng cao. Xuất tất cả hoặc các trang được chọn.",
+                feature_8_title: "Hình ảnh sang PDF",
+                feature_8_desc: "Kết hợp hình ảnh thành tài liệu PDF. Kích thước và bố cục trang tùy chỉnh.",
+                screenshots_title: "Xem Chuyển đổi hình ảnh hoạt động",
+                screenshots_subtitle: "Giao diện đẹp và trực giác giúp xử lý hình ảnh dễ dàng.",
+                how_title: "Cách hoạt động",
+                how_subtitle: "Ba bước đơn giản để chuyển đổi hình ảnh của bạn.",
+                step_1_title: "Chọn hình ảnh",
+                step_1_desc: "Chọn ảnh từ thư viện hoặc chụp ảnh mới bằng máy ảnh.",
+                step_2_title: "Chọn công cụ",
+                step_2_desc: "Chọn từ xoay, thay đổi kích thước, cắt, nén, chuyển đổi hoặc các công cụ khác.",
+                step_3_title: "Lưu & Chia sẻ",
+                step_3_desc: "Lưu vào thư viện hoặc chia sẻ trực tiếp đến ứng dụng yêu thích.",
+                download_title: "Sẵn sàng chuyển đổi hình ảnh?",
+                download_desc: "Tải Chuyển đổi hình ảnh ngay và bắt đầu xử lý hình ảnh với các công cụ mạnh mẽ.",
+                app_store_small: "Tải trên",
+                app_store: "App Store",
+                footer_desc: "Công cụ xử lý hình ảnh tất cả trong một.",
+                footer_product: "Sản phẩm",
+                footer_support: "Hỗ trợ",
+                footer_privacy: "Chính sách riêng tư",
+                footer_contact: "Liên hệ"
+            },
+            id: {
+                app_name: "Konverter Gambar",
+                nav_features: "Fitur",
+                nav_screenshots: "Tangkapan Layar",
+                nav_how_it_works: "Cara Kerja",
+                nav_download: "Unduh",
+                hero_title: "Konversi Gambar Gratis.<br>",
+                hero_subtitle: "Alat yang Kuat.",
+                hero_desc: "Alat pemrosesan gambar all-in-one. Konversi format, kompres, potong, ubah ukuran, gabung, dan lainnya.",
+                btn_download_ios: "Unduh untuk iOS",
+                btn_learn_more: "Pelajari Lebih Lanjut",
+                badge_all_features: "Semua Fitur",
+                badge_no_ads: "Tanpa Iklan",
+                badge_private: "100% Pribadi",
+                features_title: "Alat Gambar yang Kuat",
+                features_subtitle: "Semua yang Anda butuhkan untuk memproses dan mengubah gambar secara efisien.",
+                feature_1_title: "Putar",
+                feature_1_desc: "Putar gambar 90, 180, atau 270 derajat. Balik horizontal atau vertikal dengan mudah.",
+                feature_2_title: "Ubah Ukuran",
+                feature_2_desc: "Ubah dimensi gambar sambil mempertahankan rasio. Ukuran预设 atau kustom.",
+                feature_3_title: "Potong",
+                feature_3_desc: "Potong gambar ke dimensi sempurna. Bebas atau预设 rasio aspek.",
+                feature_4_title: "Gabung",
+                feature_4_desc: "Gabungkan beberapa gambar menjadi satu. Tata letak vertikal, horizontal, atau grid.",
+                feature_5_title: "Konversi Format",
+                feature_5_desc: "Konversi antar format gambar: JPEG, PNG, HEIC, WebP, dan lainnya.",
+                feature_6_title: "Kompres",
+                feature_6_desc: "Kecilkan ukuran file sambil mempertahankan kualitas. Kompresi batch didukung.",
+                feature_7_title: "PDF ke Gambar",
+                feature_7_desc: "Ubah halaman PDF menjadi gambar berkualitas tinggi. Ekspor semua atau halaman yang dipilih.",
+                feature_8_title: "Gambar ke PDF",
+                feature_8_desc: "Gabungkan gambar menjadi dokumen PDF. Ukuran dan tata letak halaman kustom.",
+                screenshots_title: "Lihat Konverter Gambar dalam Aksi",
+                screenshots_subtitle: "Antarmuka yang indah dan intuitif membuat pemrosesan gambar menjadi mudah.",
+                how_title: "Cara Kerja",
+                how_subtitle: "Tiga langkah sederhana untuk mengubah gambar Anda.",
+                step_1_title: "Pilih Gambar",
+                step_1_desc: "Pilih foto dari perpustakaan atau ambil yang baru dengan kamera.",
+                step_2_title: "Pilih Alat",
+                step_2_desc: "Pilih dari putar, ubah ukuran, potong, kompres, konversi, atau alat lainnya.",
+                step_3_title: "Simpan & Bagikan",
+                step_3_desc: "Simpan ke perpustakaan atau bagikan langsung ke aplikasi favorit.",
+                download_title: "Siap Mengubah Gambar Anda?",
+                download_desc: "Unduh Konverter Gambar sekarang dan mulai memproses gambar dengan alat yang kuat.",
+                app_store_small: "Unduh di",
+                app_store: "App Store",
+                footer_desc: "Alat pemrosesan gambar all-in-one.",
+                footer_product: "Produk",
+                footer_support: "Dukungan",
+                footer_privacy: "Kebijakan Privasi",
+                footer_contact: "Hubungi Kami"
+            },
+            ar: {
+                dir: "rtl",
+                app_name: "محول الصور",
+                nav_features: "الميزات",
+                nav_screenshots: "لقطات الشاشة",
+                nav_how_it_works: "كيف يعمل",
+                nav_download: "تحميل",
+                hero_title: "تحويل الصور مجاناً.<br>",
+                hero_subtitle: "أدوات قوية.",
+                hero_desc: "أداة معالجة الصور الشاملة. تحويل التنسيقات، الضغط، القص، تغيير الحجم، الدمج والمزيد.",
+                btn_download_ios: "تحميل لـ iOS",
+                btn_learn_more: "اعرف المزيد",
+                badge_all_features: "جميع الميزات",
+                badge_no_ads: "بدون إعلانات",
+                badge_private: "100% خاص",
+                features_title: "أدوات صور قوية",
+                features_subtitle: "كل ما تحتاجه لمعالجة وتحويل صورك بكفاءة.",
+                feature_1_title: "تدوير",
+                feature_1_desc: "تدوير الصور بزاوية 90 أو 180 أو 270 درجة. قلب أفقي أو عمودي بسهولة.",
+                feature_2_title: "تغيير الحجم",
+                feature_2_desc: "تغيير أبعاد الصورة مع الحفاظ على نسبة العرض إلى الارتفاع.Sizes محددة أو مخصصة.",
+                feature_3_title: "قص",
+                feature_3_desc: "قص الصور لأبعاد مثالية. حر أونسب محددة.",
+                feature_4_title: "دمج",
+                feature_4_desc: "دمج عدة صور في صورة واحدة. تخطيط عمودي أو أفقي أو شبكي.",
+                feature_5_title: "تحويل التنسيق",
+                feature_5_desc: "التحويل بين تنسيقات الصور: JPEG، PNG، HEIC، WebP والمزيد.",
+                feature_6_title: "ضغط",
+                feature_6_desc: "تصغير حجم الملف مع الحفاظ على الجودة. دعم الضغط الدفعي.",
+                feature_7_title: "PDF إلى صورة",
+                feature_7_desc: "تحويل صفحات PDF إلى صور عالية الجودة. تصدير كل الصفحات أو المحدد منها.",
+                feature_8_title: "صورة إلى PDF",
+                feature_8_desc: "دمج الصور في مستند PDF. أحجام وتخطيطات صفحات مخصصة.",
+                screenshots_title: "شاهد محول الصور عملياً",
+                screenshots_subtitle: "واجهة جميلة وبديهية تجعل معالجة الصور سهلة.",
+                how_title: "كيف يعمل",
+                how_subtitle: "ثلاث خطوات بسيطة لتحويل صورك.",
+                step_1_title: "اختر صورة",
+                step_1_desc: "اختر صورة من مكتبتك أو التقط صورة جديدة بالكاميرا.",
+                step_2_title: "اختر أداة",
+                step_2_desc: "اختر من تدوير، تغيير الحجم، قص، ضغط، تحويل أو أدوات أخرى.",
+                step_3_title: "حفظ ومشاركة",
+                step_3_desc: "احفظ في مكتبتك أو شارك مباشرة في تطبيقاتك المفضلة.",
+                download_title: "هل أنت مستعد لتحويل صورك؟",
+                download_desc: "قم بتحميل محول الصور الآن وابدأ معالجة صورك بأدوات قوية.",
+                app_store_small: "تحميل على",
+                app_store: "App Store",
+                footer_desc: "أداة معالجة الصور الشاملة.",
+                footer_product: "المنتج",
+                footer_support: "الدعم",
+                footer_privacy: "سياسة الخصوصية",
+                footer_contact: "اتصل بنا"
+            },
+            fr: {
+                app_name: "Convertisseur d'images",
+                nav_features: "Fonctionnalités",
+                nav_screenshots: "Captures d'écran",
+                nav_how_it_works: "Fonctionnement",
+                nav_download: "Télécharger",
+                hero_title: "Conversion d'images gratuite.<br>",
+                hero_subtitle: "Outils puissants.",
+                hero_desc: "Outil de traitement d'images tout-en-un. Convertissez les formats, comprimez, recadrez, redimensionnez, fusionnez et plus.",
+                btn_download_ios: "Télécharger pour iOS",
+                btn_learn_more: "En savoir plus",
+                badge_all_features: "Toutes les fonctionnalités",
+                badge_no_ads: "Sans publicités",
+                badge_private: "100% Privé",
+                features_title: "Outils d'images puissants",
+                features_subtitle: "Tout ce dont vous avez besoin pour traiter et transformer vos images efficacement.",
+                feature_1_title: "Rotation",
+                feature_1_desc: "Faites pivoter les images de 90, 180 ou 270 degrés. Retournez horizontalement ou verticalement.",
+                feature_2_title: "Redimensionner",
+                feature_2_desc: "Modifiez les dimensions de l'image en conservant le ratio. Tailles prédéfinies ou personnalisées.",
+                feature_3_title: "Recadrer",
+                feature_3_desc: "Recadrez les images aux dimensions parfaites. Libre ou ratios prédéfinis.",
+                feature_4_title: "Fusionner",
+                feature_4_desc: "Combinez plusieurs images en une. Mises en page verticales, horizontales ou en grille.",
+                feature_5_title: "Convertir format",
+                feature_5_desc: "Convertissez entre les formats: JPEG, PNG, HEIC, WebP et plus.",
+                feature_6_title: "Compresser",
+                feature_6_desc: "Réduisez la taille du fichier tout en conservant la qualité. Compression par lot supportée.",
+                feature_7_title: "PDF vers Image",
+                feature_7_desc: "Convertissez les pages PDF en images de haute qualité. Exportez toutes ou les pages sélectionnées.",
+                feature_8_title: "Image vers PDF",
+                feature_8_desc: "Combinez les images en document PDF. Formats et mises en page personnalisés.",
+                screenshots_title: "Voir Convertisseur d'images en action",
+                screenshots_subtitle: "Interface belle et intuitive qui rend le traitement d'images facile.",
+                how_title: "Comment ça marche",
+                how_subtitle: "Trois étapes simples pour transformer vos images.",
+                step_1_title: "Sélectionner",
+                step_1_desc: "Choisissez une photo dans votre bibliothèque ou prenez-en une nouvelle.",
+                step_2_title: "Choisir outil",
+                step_2_desc: "Sélectionnez rotation, redimensionnement, recadrage, compression, conversion et plus.",
+                step_3_title: "Enregistrer",
+                step_3_desc: "Enregistrez dans votre bibliothèque ou partagez directement vers vos apps préférées.",
+                download_title: "Prêt à transformer vos images?",
+                download_desc: "Téléchargez Convertisseur d'images maintenant et commencez à traiter vos images.",
+                app_store_small: "Télécharger sur",
+                app_store: "App Store",
+                footer_desc: "Outil de traitement d'images tout-en-un.",
+                footer_product: "Produit",
+                footer_support: "Support",
+                footer_privacy: "Politique de confidentialité",
+                footer_contact: "Contactez-nous"
+            },
+            de: {
+                app_name: "Bildkonverter",
+                nav_features: "Funktionen",
+                nav_screenshots: "Screenshots",
+                nav_how_it_works: "So funktioniert's",
+                nav_download: "Herunterladen",
+                hero_title: "Kostenlose Bildkonvertierung.<br>",
+                hero_subtitle: "Leistungsstarke Werkzeuge.",
+                hero_desc: "Alles-in-Einem Bildverarbeitungstool. Formate konvertieren, komprimieren, zuschneiden, Größe ändern, zusammenfügen und mehr.",
+                btn_download_ios: "Für iOS herunterladen",
+                btn_learn_more: "Mehr erfahren",
+                badge_all_features: "Alle Funktionen",
+                badge_no_ads: "Keine Werbung",
+                badge_private: "100% Privatsphäre",
+                features_title: "Leistungsstarke Bildwerkzeuge",
+                features_subtitle: "Alles was Sie brauchen um Ihre Bilder effizient zu verarbeiten und zu transformieren.",
+                feature_1_title: "Drehen",
+                feature_1_desc: "Bilder um 90, 180 oder 270 Grad drehen. Horizontal oder vertikal spiegeln.",
+                feature_2_title: "Größe ändern",
+                feature_2_desc: "Bildabmessungen ändern mit Beibehaltung des Seitenverhältnisses. Voreinstellungen oder benutzerdefiniert.",
+                feature_3_title: "Zuschneiden",
+                feature_3_desc: "Bilder auf perfekte Dimensionen zuschneiden. Frei oder voreingestellte Seitenverhältnisse.",
+                feature_4_title: "Zusammenfügen",
+                feature_4_desc: "Mehrere Bilder zu einem kombinieren. Vertikale, horizontale oder Raster-Layouts.",
+                feature_5_title: "Format konvertieren",
+                feature_5_desc: "Zwischen Bildformaten konvertieren: JPEG, PNG, HEIC, WebP und mehr.",
+                feature_6_title: "Komprimieren",
+                feature_6_desc: "Dateigröße reduzieren bei gleichbleibender Qualität. Stapelkomprimierung unterstützt.",
+                feature_7_title: "PDF zu Bild",
+                feature_7_desc: "PDF-Seiten in hochwertige Bilder konvertieren. Alle oder ausgewählte Seiten exportieren.",
+                feature_8_title: "Bild zu PDF",
+                feature_8_desc: "Bilder zu PDF-Dokument kombinieren. Benutzerdefinierte Seitengrößen und Layouts.",
+                screenshots_title: "Bildkonverter in Aktion",
+                screenshots_subtitle: "Schöne, intuitive Oberfläche macht Bildverarbeitung einfach.",
+                how_title: "So funktioniert's",
+                how_subtitle: "Drei einfache Schritte um Ihre Bilder zu transformieren.",
+                step_1_title: "Bild auswählen",
+                step_1_desc: "Wählen Sie ein Foto aus Ihrer Bibliothek oder nehmen Sie ein neues auf.",
+                step_2_title: "Werkzeug wählen",
+                step_2_desc: "Wählen Sie Drehen, Größe ändern, Zuschneiden, Komprimieren, Konvertieren und mehr.",
+                step_3_title: "Speichern",
+                step_3_desc: "In Ihrer Bibliothek speichern oder direkt in Ihren Lieblings-Apps teilen.",
+                download_title: "Bereit Ihre Bilder zu transformieren?",
+                download_desc: "Laden Sie Bildkonverter jetzt herunter und beginnen Sie mit leistungsstarken Werkzeugen.",
+                app_store_small: "Herunterladen auf dem",
+                app_store: "App Store",
+                footer_desc: "Alles-in-Einem Bildverarbeitungstool.",
+                footer_product: "Produkt",
+                footer_support: "Support",
+                footer_privacy: "Datenschutzrichtlinie",
+                footer_contact: "Kontakt"
+            },
+            es: {
+                app_name: "Convertidor de imágenes",
+                nav_features: "Características",
+                nav_screenshots: "Capturas de pantalla",
+                nav_how_it_works: "Cómo funciona",
+                nav_download: "Descargar",
+                hero_title: "Conversión de imágenes gratis.<br>",
+                hero_subtitle: "Herramientas potentes.",
+                hero_desc: "Herramienta de procesamiento de imágenes todo-en-uno. Convierte formatos, comprime, recorta, redimensiona, combina y más.",
+                btn_download_ios: "Descargar para iOS",
+                btn_learn_more: "Más información",
+                badge_all_features: "Todas las funciones",
+                badge_no_ads: "Sin anuncios",
+                badge_private: "100% Privado",
+                features_title: "Herramientas de imagen potentes",
+                features_subtitle: "Todo lo que necesitas para procesar y transformar tus imágenes eficientemente.",
+                feature_1_title: "Rotar",
+                feature_1_desc: "Rota imágenes 90, 180 o 270 grados. Voltea horizontal o verticalmente.",
+                feature_2_title: "Redimensionar",
+                feature_2_desc: "Cambia las dimensiones manteniendo la proporción. Tamaños preset o personalizados.",
+                feature_3_title: "Recortar",
+                feature_3_desc: "Recorta imágenes a dimensiones perfectas. Libre o proporciones preset.",
+                feature_4_title: "Combinar",
+                feature_4_desc: "Combina múltiples imágenes en una. Diseños vertical, horizontal o cuadrícula.",
+                feature_5_title: "Convertir formato",
+                feature_5_desc: "Convierte entre formatos: JPEG, PNG, HEIC, WebP y más.",
+                feature_6_title: "Comprimir",
+                feature_6_desc: "Reduce el tamaño manteniendo calidad. Compresión por lotes soportada.",
+                feature_7_title: "PDF a Imagen",
+                feature_7_desc: "Convierte páginas PDF a imágenes de alta calidad. Exporta todas o seleccionadas.",
+                feature_8_title: "Imagen a PDF",
+                feature_8_desc: "Combina imágenes en documento PDF. Tamaños y diseños personalizados.",
+                screenshots_title: "Ver Convertidor en acción",
+                screenshots_subtitle: "Interfaz hermosa e intuitiva que hace el procesamiento fácil.",
+                how_title: "Cómo funciona",
+                how_subtitle: "Tres pasos simples para transformar tus imágenes.",
+                step_1_title: "Seleccionar imagen",
+                step_1_desc: "Elige una foto de tu biblioteca o toma una nueva con tu cámara.",
+                step_2_title: "Elegir herramienta",
+                step_2_desc: "Selecciona rotar, redimensionar, comprimir, convertir y más.",
+                step_3_title: "Guardar y compartir",
+                step_3_desc: "Guarda en tu biblioteca o comparte directamente a tus apps favoritas.",
+                download_title: "¿Listo para transformar tus imágenes?",
+                download_desc: "Descarga Convertidor de imágenes ahora y comienza a procesar con herramientas potentes.",
+                app_store_small: "Descargar en el",
+                app_store: "App Store",
+                footer_desc: "Herramienta de procesamiento de imágenes todo-en-uno.",
+                footer_product: "Producto",
+                footer_support: "Soporte",
+                footer_privacy: "Política de privacidad",
+                footer_contact: "Contacto"
+            },
+            pt: {
+                app_name: "Conversor de Imagens",
+                nav_features: "Recursos",
+                nav_screenshots: "Capturas de tela",
+                nav_how_it_works: "Como funciona",
+                nav_download: "Baixar",
+                hero_title: "Conversão de imagens grátis.<br>",
+                hero_subtitle: "Ferramentas poderosas.",
+                hero_desc: "Ferramenta de processamento de imagens completa. Converta formatos, comprima, Corte, redimensione, combine e muito mais.",
+                btn_download_ios: "Baixar para iOS",
+                btn_learn_more: "Saiba mais",
+                badge_all_features: "Todos os recursos",
+                badge_no_ads: "Sem anúncios",
+                badge_private: "100% Privado",
+                features_title: "Ferramentas de imagem poderosas",
+                features_subtitle: "Tudo o que você precisa para processar e transformar suas imagens.",
+                feature_1_title: "Girar",
+                feature_1_desc: "Gire imagens em 90, 180 ou 270 graus. Inverta horizontal ou verticalmente.",
+                feature_2_title: "Redimensionar",
+                feature_2_desc: "Altere dimensões mantendo a proporção. Tamanhos predefinidos ou personalizados.",
+                feature_3_title: "Cortar",
+                feature_3_desc: "Corte imagens para dimensões perfeitas. Livre ou proporções predefinidas.",
+                feature_4_title: "Combinar",
+                feature_4_desc: "Combine várias imagens em uma. Layouts vertical, horizontal ou grade.",
+                feature_5_title: "Converter formato",
+                feature_5_desc: "Converta entre formatos: JPEG, PNG, HEIC, WebP e mais.",
+                feature_6_title: "Comprimir",
+                feature_6_desc: "Reduza o tamanho mantendo a qualidade. Compressão em lote suportada.",
+                feature_7_title: "PDF para Imagem",
+                feature_7_desc: "Converta páginas PDF em imagens de alta qualidade. Exporte todas ou selecionadas.",
+                feature_8_title: "Imagem para PDF",
+                feature_8_desc: "Combine imagens em documento PDF. Tamanhos e layouts personalizados.",
+                screenshots_title: "Veja o Conversor em ação",
+                screenshots_subtitle: "Interface bonita e intuitiva que facilita o processamento.",
+                how_title: "Como funciona",
+                how_subtitle: "Três passos simples para transformar suas imagens.",
+                step_1_title: "Selecionar imagem",
+                step_1_desc: "Escolha uma foto da biblioteca ou tire uma nova com a câmera.",
+                step_2_title: "Escolher ferramenta",
+                step_2_desc: "Selecione girar, redimensionar, cortar, comprimir, converter e mais.",
+                step_3_title: "Salvar e compartilhar",
+                step_3_desc: "Salve na biblioteca ou compartilhe diretamente nos seus apps favoritos.",
+                download_title: "Pronto para transformar suas imagens?",
+                download_desc: "Baixe o Conversor agora e comece a processar com ferramentas poderosas.",
+                app_store_small: "Baixar na",
+                app_store: "App Store",
+                footer_desc: "Ferramenta de processamento de imagens completa.",
+                footer_product: "Produto",
+                footer_support: "Suporte",
+                footer_privacy: "Política de privacidade",
+                footer_contact: "Contato"
+            },
+            it: {
+                app_name: "Convertitore Immagini",
+                nav_features: "Funzionalità",
+                nav_screenshots: "Screenshot",
+                nav_how_it_works: "Come funziona",
+                nav_download: "Scarica",
+                hero_title: "Conversione immagini gratis.<br>",
+                hero_subtitle: "Strumenti potenti.",
+                hero_desc: "Strumento di elaborazione immagini tutto in uno. Converti formati, comprimi, ritaglia, ridimensiona, unisci e altro.",
+                btn_download_ios: "Scarica per iOS",
+                btn_learn_more: "Scopri di più",
+                badge_all_features: "Tutte le funzionalità",
+                badge_no_ads: "Senza pubblicità",
+                badge_private: "100% Privato",
+                features_title: "Strumenti immagini potenti",
+                features_subtitle: "Tutto ciò che ti serve per elaborare e trasformare le tue immagini.",
+                feature_1_title: "Ruota",
+                feature_1_desc: "Ruota immagini di 90, 180 o 270 gradi. Capovolgi orizzontalmente o verticalmente.",
+                feature_2_title: "Ridimensiona",
+                feature_2_desc: "Modifica dimensioni mantenendo le proporzioni. Dimensioni predefinite o personalizzate.",
+                feature_3_title: "Ritaglia",
+                feature_3_desc: "Ritaglia immagini a dimensioni perfette. Libero o proporzioni predefinite.",
+                feature_4_title: "Unisci",
+                feature_4_desc: "Combina più immagini in una. Layout verticali, orizzontali o a griglia.",
+                feature_5_title: "Converti formato",
+                feature_5_desc: "Converti tra formati: JPEG, PNG, HEIC, WebP e altro.",
+                feature_6_title: "Comprimi",
+                feature_6_desc: "Riduci dimensioni mantenendo la qualità. Compressione batch supportata.",
+                feature_7_title: "PDF a Immagine",
+                feature_7_desc: "Converti pagine PDF in immagini di alta qualità. Esporta tutte o selezionate.",
+                feature_8_title: "Immagine a PDF",
+                feature_8_desc: "Combina immagini in documento PDF. Dimensioni e layout personalizzati.",
+                screenshots_title: "Vedi Convertitore in azione",
+                screenshots_subtitle: "Interfaccia bellissima e intuitiva che rende l'elaborazione facile.",
+                how_title: "Come funziona",
+                how_subtitle: "Tre semplici passi per trasformare le tue immagini.",
+                step_1_title: "Seleziona immagine",
+                step_1_desc: "Scegli una foto dalla libreria o scattane una nuova.",
+                step_2_title: "Scegli strumento",
+                step_2_desc: "Seleziona ruota, ridimensiona, ritaglia, comprimi, converti e altro.",
+                step_3_title: "Salva e condividi",
+                step_3_desc: "Salva nella libreria o condividi direttamente nelle tue app preferite.",
+                download_title: "Pronto a trasformare le tue immagini?",
+                download_desc: "Scarica Convertitore ora e inizia a elaborare con strumenti potenti.",
+                app_store_small: "Scarica sull'",
+                app_store: "App Store",
+                footer_desc: "Strumento di elaborazione immagini tutto in uno.",
+                footer_product: "Prodotto",
+                footer_support: "Supporto",
+                footer_privacy: "Privacy",
+                footer_contact: "Contattaci"
+            }
+        };
+
+        // Get saved language or default to English
+        const savedLang = localStorage.getItem('lang') || 'en';
+
+        // Apply translations
+        function applyTranslations(lang) {
+            const t = translations[lang] || translations.en;
+
+            // Set direction for RTL languages
+            if (t.dir) {
+                document.documentElement.setAttribute('dir', t.dir);
+            } else {
+                document.documentElement.setAttribute('dir', 'ltr');
+            }
+
+            // Apply all translations
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.dataset.i18n;
+                if (t[key]) {
+                    if (key === 'hero_title') {
+                        el.innerHTML = t[key];
+                    } else {
+                        el.textContent = t[key];
+                    }
+                }
+            });
+
+            // Update language selector
+            document.getElementById('lang-select').value = lang;
+
+            // Save preference
+            localStorage.setItem('lang', lang);
+        }
+
+        // Change language
+        function changeLanguage(lang) {
+            applyTranslations(lang);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // 应用配置链接
+            if (window.APP_CONFIG) {
+                const appStoreLink = document.getElementById('app-store-link');
+                const privacyLink = document.getElementById('privacy-link');
+                const contactLink = document.getElementById('contact-link');
+
+                if (appStoreLink) {
+                    appStoreLink.href = window.APP_CONFIG.appStoreUrl || '#';
+                }
+                if (privacyLink) {
+                    privacyLink.href = window.APP_CONFIG.privacyPolicyUrl || '#';
+                }
+                if (contactLink) {
+                    contactLink.href = 'mailto:' + (window.APP_CONFIG.contactEmail || '');
+                }
+            }
+
+            applyTranslations(savedLang);
+
+            // Header scroll effect
+            window.addEventListener('scroll', () => {
+                const header = document.getElementById('header');
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            });
+
+            // Smooth scroll for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
