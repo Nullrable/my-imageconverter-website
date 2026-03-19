@@ -1,0 +1,10 @@
+# Robots.txt for Image Converter
+
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://imageconverter.erp4.cn/sitemap.xml
+
+# Crawl-delay
+Crawl-delay: 1
